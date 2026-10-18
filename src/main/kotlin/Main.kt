@@ -1,29 +1,60 @@
 import kotlin.system.exitProcess
 
 /**
- * Главная точка входа в приложение.
+ * Точка входа в приложение для анализа зависимостей NuGet.
  *
- * Получает параметры командной строки, проверяет их
- * и выводит конфигурацию в формате «ключ=значение».
+ * Получает конфигурацию и выводит прямые зависимости пакета.
  *
  * @param args Аргументы командной строки.
  */
 fun main(args: Array<String>) {
     try {
-        // Получаем проверенную конфигурацию приложения.
+        // Читаем параметры запуска приложения.
         val config = CliParser.parse(args)
 
-        // Выводим значения всех параметров.
-        println("package=${config.packageName}")
-        println("repository=${config.repository}")
-        println("test-mode=${config.testMode}")
-        println("output=${config.outputFile}")
-        println("filter=${config.filter}")
-    } catch (exception: IllegalArgumentException) {
-        // Ошибки параметров отправляем в стандартный поток ошибок.
-        System.err.println("Ошибка: ${exception.message}")
+        // Тестовый репозиторий графа реализуем на третьем этапе.
+        require(!config.testMode) {
+            "Тестовый режим будет реализован на этапе 3"
+        }
 
-        // Ненулевой код сообщает об ошибочном завершении.
+        // Получаем прямые зависимости через NuGet V3 API.
+        val packageInfo =
+            NuGetClient().getDependencies(
+                config.packageName,
+                config.repository,
+            )
+
+        printDependencies(packageInfo)
+    } catch (exception: IllegalArgumentException) {
+        System.err.println("Ошибка: ${exception.message}")
         exitProcess(1)
+    }
+}
+
+/**
+ * Выводит пакет и его прямые зависимости по целевым платформам.
+ */
+private fun printDependencies(packageInfo: PackageInfo) {
+    println("Пакет: ${packageInfo.name}")
+    println("Версия: ${packageInfo.version}")
+    println()
+    println("Прямые зависимости:")
+
+    if (packageInfo.groups.all { it.dependencies.isEmpty() }) {
+        println("Прямые зависимости отсутствуют")
+        return
+    }
+
+    for (group in packageInfo.groups) {
+        println()
+        println("Целевая платформа: ${group.targetFramework}")
+
+        if (group.dependencies.isEmpty()) {
+            println("  Зависимости отсутствуют")
+        }
+
+        for (dependency in group.dependencies) {
+            println("  - ${dependency.name} [${dependency.versionRange}]")
+        }
     }
 }
