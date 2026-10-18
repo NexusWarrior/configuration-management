@@ -1,0 +1,66 @@
+# Артефакты сборки Gradle
+.gradle/
+build/
+out/
+
+# Настройки IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Настройки VS Code и Codespaces
+.vscode/
+
+# Локальные файлы ОС
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# Сгенерированные изображения графов
+*.png
+
+# Локальные переменные окружения
+.env
+.env.local
+
+
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Kotlin ###
+.kotlin
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
